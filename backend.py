@@ -1,6 +1,12 @@
 from typing import Union
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import pandas as pd
+
+class MyFile(BaseModel):
+    data: str
+    type: str
 
 app = FastAPI()
 
@@ -16,10 +22,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+#@app.get("/")
+#def read_root():
+#    return {"Hello": "World"}
 
-@app.get("/getFile")
-def read_root():
+@app.post("/getFile")
+async def read_dupa(obj: MyFile):
+    print(obj.type)
     return {'test'}
