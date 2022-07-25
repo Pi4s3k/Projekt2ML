@@ -34,9 +34,9 @@ app.add_middleware(
 async def read_dupa(obj: MyFile):
     print(obj.type,obj.name)
     file_name=obj.name +'.'+ obj.type
-    #file_content=base64.b64decode(obj.data)
-    with open("test.txt","w+") as f:
-        f.write(obj.data)
+    file_content=base64.b64decode(obj.data).decode('utf-8')
+    with open(file_name,"w+") as f:
+        f.write(str(file_content))
 
 
 
