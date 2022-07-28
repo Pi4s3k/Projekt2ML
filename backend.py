@@ -4,11 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import pandas as pd
 import base64
+import os
 
 class MyFile(BaseModel):
     data: str
     name: str
     type: str
+    sep: str
+    decimal: str
 
 
 app = FastAPI()
@@ -37,6 +40,15 @@ async def read_dupa(obj: MyFile):
     file_content=base64.b64decode(obj.data).decode('utf-8')
     with open(file_name,"w+") as f:
         f.write(str(file_content))
+    df=pd.read_csv(file_name,sep=obj.sep,decimal=obj.decimal)
+    print(df.columns)
+    os.remove(file_name)
+
+@app.get('/pic')
+def send_graph():
+    return { "dupa" : "dupa" } 
+
+
 
 
 
