@@ -14,6 +14,7 @@ let dataobj;
 function App() {
 
   const [file, setFile] = useState(null);
+  const [graph, setGraph] = useState(null);
 
   const handleChange = (file) => {
     setFile(file);
@@ -33,7 +34,11 @@ function getBase64(file) {
       axios.post('http://127.0.0.1:8000/getFile',{data : dataobj, name : filename, type : filetype, sep : sepinput, decimal : decimalinput});
       axios.get('http://localhost:8000/pic')
       .then(function (response) {
-        console.log(response.data.dupa)
+        setGraph(response.data.graph)
+        console.log(response.data.graph)
+      })
+      .catch(function (error) {
+        console.log(error);
       })
    };
    reader.onerror = function (error) {
@@ -48,10 +53,13 @@ function sendToBE(){
 
   return (
     <div className="App">
+      <div><h1>Plik CSV powinien zawierać kolumny nazwane cz,cx, alpha</h1></div>
       <div className="FileUploader"><FileUploader handleChange={handleChange} name="file" types={fileTypes} /></div>
       <div><Button variant="contained" onClick={sendToBE}>Sent ot BE</Button></div>
       <div><TextField variant="standard" label="csv separator" id="separator-input" /></div>
       <div><TextField variant="standard" label="csv decimal" id="decimal-input" /></div>
+      <div><TextField variant="standard" label="MAC" id="MAC-input" /></div>
+      <img src={"data:image/jpeg;base64," + graph} />
     </div>
   )
 }
