@@ -14,6 +14,9 @@ class MyFile(BaseModel):
     type: str
     sep: str
     decimal: str
+    wingspan: str
+    wingsurface: str
+    mass: str
 
 
 app = FastAPI()
@@ -33,28 +36,39 @@ app.add_middleware(
 #Funkcja tworząca wykres
 def create_graph(df):
     my_stringIObytes = io.BytesIO()
+    plt.figure()
     plt.plot(df['alpha'],df['cz'])
     plt.savefig(my_stringIObytes,dpi=300,format='png')
     my_stringIObytes.seek(0)
     my_base64_pngData = base64.b64encode(my_stringIObytes.read())
     return my_base64_pngData
+    plt.close()
+
+#Funkcja szacująca prędkość przeciągnięcia Vs1
+
+#Funkcja szacująca liczbę Reynoldsa dla minimalnej prędkości lotu
+def Reynolds():
+    return __self__
 
 @app.post("/getFile")
 async def read_dupa(obj: MyFile):
-#Definicja nazwy pliku
-    file_name=obj.name +'.'+ obj.type
 #Dekodowanie pliku
+    file_name=obj.name +'.'+ obj.type
     file_content=base64.b64decode(obj.data).decode('utf-8')
     with open(file_name,"w+") as f:
         f.write(str(file_content))
 #Utworzenie df'a na podstawie pliku
-    df=pd.read_csv(file_name,sep=obj.sep,decimal=obj.decimal)
+    df=pd.read_csv(file_name, sep=obj.sep, decimal=obj.decimal)
 #Usunięcie pliku
     os.remove(file_name)
 #Tworzenie wykresu w postacie stringa base64
-    global graph
+    global graph #zmienna globalna przekazwyana dalej do funckji get
     graph=create_graph(df)
 
+
+
+
+#Funkcja przesyłająca wykres do frontendu
 @app.get('/pic')
 def send_graph():
     return { "graph" : graph } 
