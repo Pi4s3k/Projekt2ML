@@ -35,6 +35,7 @@ function getBase64(file) {
       let wingspaninput = document.getElementById("wing_span-input").value;
       let wingsurfaceinput = document.getElementById("wing_surface-input").value;
       let massinput = document.getElementById("mass-input").value;
+      let macinput = document.getElementById("MAC-input").value;
       {/* Tutaj wysłanie zapytania do backendu z odczytanymi zmiennymi */}
       axios.post('http://127.0.0.1:8000/getFile',
       {
@@ -45,7 +46,8 @@ function getBase64(file) {
       decimal : decimalinput,
       wingspan : wingspaninput,
       wingsurface : wingsurfaceinput,
-      mass : massinput
+      mass : massinput,
+      MAC : macinput
     });
       axios.get('http://localhost:8000/pic')
       .then(function (response) {
@@ -75,14 +77,14 @@ function sendToBE(){
     </div>
       
     <div className="text">
-      <TextField variant="standard" label="csv separator" id="separator-input" />
-      <TextField variant="standard" label="csv decimal" id="decimal-input" />
-      <TextField variant="standard" label="MAC" id="MAC-input" />
+      <TextField variant="standard" label="csv separator" id="separator-input" defaultValue={','} />
+      <TextField variant="standard" label="csv decimal" id="decimal-input" defaultValue={'.'}/>
+      <TextField variant="standard" label="MAC" id="MAC-input" defaultValue={'1.9'}/>
     </div>
     <div className="text">
-      <TextField variant="standard" label="Wing Span" id="wing_span-input" />
-      <TextField variant="standard" label="Wing Surface" id="wing_surface-input" />
-      <TextField variant="standard" label="Mass" id="mass-input" />
+      <TextField variant="standard" label="Wing Span" id="wing_span-input" defaultValue={'15.87'}/>
+      <TextField variant="standard" label="Wing Surface" id="wing_surface-input" defaultValue={'30.15'}/>
+      <TextField variant="standard" label="Mass" id="mass-input" defaultValue={'2650'}/>
     </div>
     <div><Button variant="contained" onClick={sendToBE}>Sent ot BE</Button></div>
     <div className='image'>
