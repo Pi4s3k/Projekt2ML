@@ -30,6 +30,7 @@ class MyFile(BaseModel):
     Cr : np.float64
     Ct : np.float64
     b25 : np.float64
+    iseliptical : bool
 
 app = FastAPI()
 
@@ -49,8 +50,12 @@ app.add_middleware(
 def create_graph1(df):
     my_stringIObytes = io.BytesIO()
     plt.figure()
-    plt.plot(df['alpha'],df['cz'])
-    plt.plot(df['alphap'],df['cz'],color='red')
+    plt.grid()
+    plt.plot(df['alpha'],df['cz'],label='Profil')
+    plt.plot(df['alphap'],df['cz'],color='red',label='Płat')
+    plt.xlabel('$\\alpha[^\circ]$')
+    plt.ylabel('Cz[-]')
+    plt.legend()
     plt.savefig(my_stringIObytes,dpi=300,format='png')
     my_stringIObytes.seek(0)
     my_base64_pngData = base64.b64encode(my_stringIObytes.read())
@@ -61,8 +66,12 @@ def create_graph1(df):
 def create_graph2(df):
     my_stringIObytes = io.BytesIO()
     plt.figure()
-    plt.plot(df['cz'],df['cx'])
-    plt.plot(df['cz'],df['cxp'],color='red')
+    plt.grid()
+    plt.plot(df['cz'],df['cx'],label='Profil')
+    plt.plot(df['cz'],df['cxp'],color='red',label='Płat')
+    plt.xlabel('Cz[-]')
+    plt.ylabel('Cx[-]')
+    plt.legend()
     plt.savefig(my_stringIObytes,dpi=300,format='png')
     my_stringIObytes.seek(0)
     my_base64_pngData = base64.b64encode(my_stringIObytes.read())
@@ -111,33 +120,39 @@ def ainf(dffunkcja):
 
 
 #Funkcje obliczające wsp korekcyjne glauerta
-def glauerttau(AR,TR,a):
-    #tau1
-    coeftau1=[0.023,-0.103,0.25,0]
-    ptau1=np.poly1d(coeftau1)
-    tau1=ptau1(AR/a)
-    #tau2
-    coeftau2=[-0.18,1.52,-3.51,3.5,-1.33,0.17]
-    ptau2=np.poly1d(coeftau2)
-    tau2=ptau2(TR)
-    #tau
-    tau=(tau1*tau2)/(0.17)
-    return tau
+def glauerttau(AR,TR,a,iseliptical):
+    if iseliptical==False:
+        #tau1
+        coeftau1=[0.023,-0.103,0.25,0]
+        ptau1=np.poly1d(coeftau1)
+        tau1=ptau1(AR/a)
+        #tau2
+        coeftau2=[-0.18,1.52,-3.51,3.5,-1.33,0.17]
+        ptau2=np.poly1d(coeftau2)
+        tau2=ptau2(TR)
+        #tau
+        tau=(tau1*tau2)/(0.17)
+        return tau
+    elif iseliptical==True:
+        return 0
 
-def glauertdelta(AR,TR,a,b25):
-    #delta1
-    delta1=0.0537*(AR/a)-0.005
-    #delta2
-    coefdelta2=[-0.43,1.83,-3.06,2.56,-1,0.148]
-    pdelta2=np.poly1d(coefdelta2)
-    delta2=pdelta2(TR)
-    #delta3
-    coefdelta3=[-2.2*pow(10,-7),pow(10,-7),1.6*pow(10,-5),0]
-    pdelta3=np.poly1d(coefdelta3)
-    delta3=(pdelta3(AR))*pow(b25,3)+1
-    #delta
-    delta=(delta1*delta2*delta3)/(0.048)
-    return delta
+def glauertdelta(AR,TR,a,b25,iseliptical):
+    if iseliptical==False:
+        #delta1
+        delta1=0.0537*(AR/a)-0.005
+        #delta2
+        coefdelta2=[-0.43,1.83,-3.06,2.56,-1,0.148]
+        pdelta2=np.poly1d(coefdelta2)
+        delta2=pdelta2(TR)
+        #delta3
+        coefdelta3=[-2.2*pow(10,-7),pow(10,-7),1.6*pow(10,-5),0]
+        pdelta3=np.poly1d(coefdelta3)
+        delta3=(pdelta3(AR))*pow(b25,3)+1
+        #delta
+        delta=(delta1*delta2*delta3)/(0.048)
+        return delta
+    elif iseliptical==True:
+        return 0
 
 #Funkcja obliczająca indukowany kąt natarcia (OBLICZENIA W RADIANACH NA SAM KONIEC KONWERSJA W STOPNIE)
 def alphaind(df,AR,glauerttau):
@@ -172,12 +187,13 @@ async def read_dupa(obj: MyFile):
     b25=obj.b25
 
 #Obliczenia wsp. korekcyjnych Glauerta
-    tau=glauerttau(AR,TR,a)
-    delta=glauertdelta(AR,TR,a,b25)
+    tau=glauerttau(AR,TR,a,obj.iseliptical)
+    delta=glauertdelta(AR,TR,a,b25,obj.iseliptical)
 
 #Obliczenia  Cx technicznego
     wingtype=obj.Wings
     cxtechniczny=cxtech(df,wingtype)
+    print(cxtechniczny)
 
 #Obliczenia Cx indukowanego (do sprawdzenia poprawność obliczeń)
     df=cxindukowane(df,AR,delta)
@@ -198,6 +214,9 @@ async def read_dupa(obj: MyFile):
 
     global graph2
     graph2=create_graph2(df)
+
+    print(tau)
+    print(delta)
 
 
 

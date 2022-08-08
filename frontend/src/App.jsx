@@ -11,6 +11,8 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
 
 const fileTypes = ["csv"];
 
@@ -22,6 +24,7 @@ function App() {
   const [graph1, setGraph1] = useState(null);
   const [graph2, setGraph2] = useState(null);
   const [wings, setWings] = useState("composite-metal");
+  const [eliptical, setEliptical] = useState(false);
 
   const handleChange = (file) => {
     setFile(file);
@@ -32,6 +35,10 @@ function App() {
     console.log("wings: " + event.target.value);
   };
 
+  const handleChangeEliptical = (event) => {
+    setEliptical(event.target.checked);
+    console.log("Eliptical: " + event.target.checked)
+  };
 
 function getBase64(file) {
    var reader = new FileReader();
@@ -66,7 +73,8 @@ function getBase64(file) {
       Wings : wings,
       Cr : crinput,
       Ct : ctinput,
-      b25 : b25input
+      b25 : b25input,
+      iseliptical : eliptical
     });
       axios.get('http://localhost:8000/pic')
       .then(function (response) {
@@ -110,10 +118,11 @@ function sendToBE(){
       <TextField variant="standard" label="β25" id="b25-input" defaultValue={'0'}/>
     </div>
 
-{/* wybór rodzaju skrzydeł do wyliczenia oporu */}
 
+<div className="text">
+  {/* wybór rodzaju skrzydeł do wyliczenia oporu */}
 <FormControl>
-      <FormLabel id="demo-radio-buttons-group-label">Rodzaj skrzydeł</FormLabel>
+      <FormLabel id="demo-radio-buttons-group-label">Konstrukcja skrzydła</FormLabel>
       <RadioGroup
         row
         aria-labelledby="demo-radio-buttons-group-label"
@@ -126,10 +135,24 @@ function sendToBE(){
         <FormControlLabel value="wooden" control={<Radio />} label="Drewniane" />
       </RadioGroup>
     </FormControl>
+  {/* Koniec wyboru rodzaju skrzydeł */}
+  <FormControl component="fieldset">
+      <FormLabel component="legend">Skrzydło eliptyczne</FormLabel>
+      <FormGroup aria-label="position">
+        <FormControlLabel
+          value="eliptical"
+          control={<Checkbox 
+          onChange={handleChangeEliptical}
+          />}
+          labelPlacement="top"
+        />
+      </FormGroup>
+    </FormControl>
 
-{/* Koniec wyboru rodzaju skrzydeł */}
+</div>
 
-    <div><Button variant="contained" onClick={sendToBE}>Sent ot BE</Button></div>
+
+    <div><Button variant="contained" onClick={sendToBE}>Calculate</Button></div>
     <div className='image'>
         <img src={graph1} />
     </div>
