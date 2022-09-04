@@ -208,27 +208,50 @@ async def read_dupa(obj: MyFile):
 
 #Usunięcie pliku
     os.remove(file_name)
-#Tworzenie wykresu w postacie stringa base64
-    global graph1 #zmienna globalna przekazwyana dalej do funckji get
-    graph1=create_graph1(df)
 
-    global graph2
-    graph2=create_graph2(df)
+    global platxczalpha
+    platxczalpha=df['alphap'].to_list()
 
-    print(tau)
-    print(delta)
+    global platyczalpha
+    platyczalpha=df['cz'].to_list()
+
+    global profilxczalpha
+    profilxczalpha=df['alpha'].to_list()
+
+    global profilyczalpha
+    profilyczalpha=df['cz'].to_list()
+
+    global profilxczcx
+    profilxczcx=df['cz'].to_list()
+
+    global profilyczcx
+    profilyczcx=df['cx'].to_list()
+
+    global platxczcx
+    platxczcx=df['cz'].to_list()
+
+    global platyczcx
+    platyczcx=df['cxp'].to_list()
 
 
 
-
-#Funkcja przesyłająca wykres do frontendu
-@app.get('/pic')
-def send_graph():
-#graph - base64pngwykresu
+#Testowa funkcja odbierająca odsyłająca dane wykresu w postaci obiektu z listą
+@app.get('/data')
+def send_list():
     return {
-        "graph1" : graph1,
-        "graph2" : graph2
-    } 
+        "x_graph1":platxczalpha,
+        "y_graph1":platyczalpha,
+        "x_graph2":profilxczalpha,
+        "y_graph2":profilyczalpha,
+        "x_graph4":profilxczcx,
+        "y_graph4":profilyczcx,
+        "x_graph3":platxczcx,
+        "y_graph3":platyczcx,
+        "name1":"Płat",
+        "name2":"Profil",
+        "name4":"Profil",
+        "name3":"Płat"
+    }
 
 
 

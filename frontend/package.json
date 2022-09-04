@@ -13,9 +13,12 @@
     "@emotion/styled": "^11.9.3",
     "@mui/material": "^5.9.1",
     "axios": "^0.27.2",
+    "plotly.js": "^2.14.0",
+    "plotly.js-dist": "^2.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-drag-drop-files": "^2.3.7",
+    "react-plotly.js": "^2.5.1",
     "uploader": "^1.45.14"
   },
   "devDependencies": {
