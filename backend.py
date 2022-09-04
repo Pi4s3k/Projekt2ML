@@ -162,6 +162,8 @@ def alphaind(df,AR,glauerttau):
 
 @app.post("/getFile")
 async def read_dupa(obj: MyFile):
+    print(obj.sep,obj.decimal)
+    print(obj.wingspan,obj.Cr,obj.Ct)
 #Dekodowanie pliku
     file_name=obj.name +'.'+ obj.type
     file_content=base64.b64decode(obj.data).decode('utf-8')
@@ -232,6 +234,8 @@ async def read_dupa(obj: MyFile):
 
     global platyczcx
     platyczcx=df['cxp'].to_list()
+
+  
 
 
 

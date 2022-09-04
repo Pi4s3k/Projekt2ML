@@ -23,6 +23,12 @@ img {
   padding: 10px;
 }
 
+.FileBox {
+  justify-content: center;
+  display: flex;
+  padding-bottom: 10px;
+}
+
 .text {
   padding-bottom: 10px;
   display: flex;
