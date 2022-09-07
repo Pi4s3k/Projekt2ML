@@ -9,7 +9,6 @@ let dataobj;
 
 function App() {
   const [file, setFile] = useState(null);
-  const [wings, setWings] = useState("composite-metal");
   const [eliptical, setEliptical] = useState(false);
   const [sepinput, setSepinput] = useState(",");
   const [decimalinput, setDecimalinput] = useState(".");
@@ -20,6 +19,8 @@ function App() {
   const [massinput, setMassinput] = useState(2650);
   const [wingsurfaceinput, setWingsurfaceinput] = useState(30.15);
   const [b25input, setB25input] = useState(0);
+  const [dragslider,setDragslider]=useState(0.15);
+  const [mindrag, setMindrag]=useState("Cx_min");
   const [graph1data, setGraph1data] = useState({
     x: null,
     y: null,
@@ -68,11 +69,11 @@ function App() {
         wingsurface: wingsurfaceinput,
         mass: massinput,
         MAC: macinput,
-        Wings: wings,
         Cr: crinput,
         Ct: ctinput,
         b25: b25input,
         iseliptical: eliptical,
+        dragslidervalue: dragslider
       });
       axios
         .get("http://localhost:8000/data")
@@ -97,6 +98,7 @@ function App() {
             y: response.data.y_graph4,
             name: response.data.name4,
           });
+          setMindrag(response.data.techdrag);
         })
         .catch(function (error) {
           console.log(error);
@@ -142,10 +144,12 @@ function App() {
           setWingsurfaceinput={setWingsurfaceinput}
           setB25input={setB25input}
           sendToBE={sendToBE}
-          setWings={setWings}
-          wings={wings}
           eliptical={eliptical}
           setEliptical={setEliptical}
+          dragslider={dragslider}
+          setDragslider={setDragslider}
+          mindrag={mindrag}
+          setMindrag={setMindrag}
         />
       </div>
 

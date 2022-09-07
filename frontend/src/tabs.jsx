@@ -7,13 +7,14 @@ import Box from "@mui/material/Box";
 import CsvHandler from "./csvhandler";
 import { TextField } from "@mui/material";
 import Button from "@mui/material/Button";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 import Checkbox from "@mui/material/Checkbox";
 import FormGroup from "@mui/material/FormGroup";
+import Slider from '@mui/material/Slider';
+import { Document, Page } from 'react-pdf';
+
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -34,6 +35,7 @@ function TabPanel(props) {
     </div>
   );
 }
+
 
 TabPanel.propTypes = {
   children: PropTypes.node,
@@ -69,15 +71,28 @@ export default function BasicTabs({
   setWingsurfaceinput,
   setB25input,
   sendToBE,
-  setWings,
-  wings,
   eliptical,
   setEliptical,
+  dragslider,
+  setDragslider,
+  setMindrag,
+  mindrag
 }) {
   const [value, setValue] = React.useState(0);
+  const [numPages, setNumPages] = React.useState(null);
+  const [pageNumber, setPageNumber] = React.useState(1);
+
+
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const techdragcalc = (value,multiplier) =>{
+    return value*multiplier;
   };
 
   return (
@@ -164,36 +179,31 @@ export default function BasicTabs({
           />
         </div>
         <div>
+        <h2>Cx_techn:{dragslider}*{mindrag}= {techdragcalc(mindrag,dragslider).toFixed(6)}</h2>
+        <Slider
+        value={dragslider}
+        min={0}
+        step={0.01}
+        max={1}
+        onChange={(event) =>{setDragslider(event.target.value);}}
+        
+        />
+        </div>
+        <div>
           <Button variant="contained" onClick={sendToBE}>
             Calculate
           </Button>
+        </div>
+        <div className='TekstWings'>
+        <h3>Typowe wartości Cx_tech:</h3>
+        -Skrzydła metalowe/kompozytowe: 0.15*Cx_min 
+        <newline/>{'\n'}
+        -Skrzydła drewniane 0.5*Cx_min:
         </div>
       </TabPanel>
       <TabPanel value={value} index={2}>
         <div className="text">
           <FormControl>
-            <FormLabel id="demo-radio-buttons-group-label">
-              Konstrukcja skrzydła
-            </FormLabel>
-            <RadioGroup
-              row
-              aria-labelledby="demo-radio-buttons-group-label"
-              name="radio-buttons-group"
-              value={wings}
-              onChange={(event) => setWings(event.target.value)}
-            >
-              <FormControlLabel
-                value="composite-metal"
-                control={<Radio />}
-                label="Kompozytowe/metalowe"
-              />
-              <FormControlLabel
-                value="wooden"
-                control={<Radio />}
-                label="Drewniane"
-              />
-            </RadioGroup>
-
             <FormGroup>
               <FormControlLabel
                 control={
@@ -210,8 +220,14 @@ export default function BasicTabs({
         </div>
       </TabPanel>
       <TabPanel value={value} index={3}>
-        <img src='https://bit.ly/3epIvcs'/>
-        <h1>TBA</h1>
+      <div>
+      <Document file="E:\Projekt2ML\frontend\projekt.pdf" onLoadSuccess={onDocumentLoadSuccess}>
+        <Page pageNumber={pageNumber} />
+      </Document>
+      <p>
+        Page {pageNumber} of {numPages}
+      </p>
+    </div>
       </TabPanel>
     </Box>
   );

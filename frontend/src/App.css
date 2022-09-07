@@ -71,3 +71,7 @@ img {
   width: 150px;
   border-radius: 50%;
 }
+
+.TekstWings {
+  white-space: pre-wrap;
+}

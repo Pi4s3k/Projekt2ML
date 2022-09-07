@@ -26,11 +26,11 @@ class MyFile(BaseModel):
     wingsurface: np.float64
     mass: np.float64
     MAC: np.float64
-    Wings: str
     Cr : np.float64
     Ct : np.float64
     b25 : np.float64
     iseliptical : bool
+    dragslidervalue : np.float64
 
 app = FastAPI()
 
@@ -97,12 +97,9 @@ def cxre(df,cz_max,cx_min1,Re1):
     return df
 
 #Funkcja obliczająca Cx tech
-def cxtech(df,wingtype):
+def cxtech(df,dragslidervalue):
     cx_min=df['cxprim'].min()
-    if wingtype == 'composite-metal':
-        return 0.15*cx_min
-    elif wingtype == 'wooden':
-        return 0.5*cx_min
+    return cx_min*dragslidervalue
 
 #Funkcja obliczająca Cx indukowane płata
 def cxindukowane(df,AR,glauertdelta):
@@ -193,9 +190,8 @@ async def read_dupa(obj: MyFile):
     delta=glauertdelta(AR,TR,a,b25,obj.iseliptical)
 
 #Obliczenia  Cx technicznego
-    wingtype=obj.Wings
-    cxtechniczny=cxtech(df,wingtype)
-    print(cxtechniczny)
+    global cxtechniczny
+    cxtechniczny=cxtech(df,obj.dragslidervalue)
 
 #Obliczenia Cx indukowanego (do sprawdzenia poprawność obliczeń)
     df=cxindukowane(df,AR,delta)
@@ -235,6 +231,8 @@ async def read_dupa(obj: MyFile):
     global platyczcx
     platyczcx=df['cxp'].to_list()
 
+    global cx_min
+    cx_min=df['cxprim'].min()
   
 
 
@@ -242,6 +240,7 @@ async def read_dupa(obj: MyFile):
 #Testowa funkcja odbierająca odsyłająca dane wykresu w postaci obiektu z listą
 @app.get('/data')
 def send_list():
+    print(np.round(cxtechniczny,3))
     return {
         "x_graph1":platxczalpha,
         "y_graph1":platyczalpha,
@@ -254,7 +253,8 @@ def send_list():
         "name1":"Płat",
         "name2":"Profil",
         "name4":"Profil",
-        "name3":"Płat"
+        "name3":"Płat",
+        "techdrag":np.round(cx_min,4)
     }
 
 

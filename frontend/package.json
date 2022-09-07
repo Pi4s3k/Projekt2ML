@@ -18,6 +18,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-drag-drop-files": "^2.3.7",
+    "react-pdf": "^5.7.2",
     "react-plotly.js": "^2.5.1",
     "uploader": "^1.45.14"
   },
